@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/dao"
 	"api/routes"
 
 	"github.com/gin-gonic/gin"
@@ -14,5 +15,6 @@ func main() {
 	r.PUT("/todo", routes.UpdateTodo)
 	r.DELETE("/todo", routes.DeleteTodo)
 	println("listening on port http://localhost:8080")
+	dao.Migrate()
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
