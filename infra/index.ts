@@ -4,23 +4,19 @@ import * as awsx from "@pulumi/awsx";
 import { ApiArgs } from "@pulumi/aws/apigatewayv2";
 import { DeploymentArgs, RestApi, RestApiArgs } from "@pulumi/aws/apigateway";
 import { TopicSubscriptionArgs } from "@pulumi/aws/sns";
+import * as apigateway from "@pulumi/aws-apigateway";
 import * as crypto from "crypto";
-// import { RestApiArgs } from "@pulumi/awsx/classic/apigateway";
 
-// Create an AWS resource (S3 Bucket)
-const bucket = new aws.s3.Bucket("my-bucket");
-
-// Export the name of the bucket
-export const bucketName = bucket.id;
-
-// const args: DeploymentArgs = {
-//     restApi: "todo-api"
-// };
-
-// const gateway = new aws.apigateway.Deployment("todo-api", args)
-const apiArgs: RestApiArgs = {
-  // routes: []
-} 
+// const loadBalancer = new aws.elb.LoadBalancer("todoApiLoadBalancer", {
+//   listeners: [
+//     {
+//       instancePort: 1,
+//       instanceProtocol: "",
+//       lbPort: 1,
+//       lbProtocol: "" 
+//     }
+//   ]
+// })
 
 const gateway = new aws.apigateway.RestApi("todoApi")
 const goTodoService = new aws.apigateway.Resource("todoApiService" , {
@@ -35,6 +31,27 @@ const goTodoServiceMethod = new aws.apigateway.Method("goTodoServiceMethod", {
   authorization: "NONE",
 })
 // console.log(goTodoServiceMethod.httpMethod)
+
+// const todoApiLoadBalancer = new aws.elb.LoadBalancer("todoApiLoadBalancer", {
+//   listeners: []
+// })
+
+// const exampleKey = new aws.kms.Key("exampleKey", {
+//   description: "example",
+//   deletionWindowInDays: 7,
+// });
+// const exampleLogGroup = new aws.cloudwatch.LogGroup("exampleLogGroup", {});
+// const cluster = new aws.ecs.Cluster("todoApiCluster", {configuration: {
+//   executeCommandConfiguration: {
+//       kmsKeyId: exampleKey.arn,
+//       logging: "OVERRIDE",
+//       logConfiguration: {
+//           cloudWatchEncryptionEnabled: true,
+//           cloudWatchLogGroupName: exampleLogGroup.name,
+//       },
+//   },
+// }});
+
 
 const integration = new aws.apigateway.Integration("todoApiGoServiceIntegration", {
   httpMethod: goTodoServiceMethod.httpMethod,
@@ -58,6 +75,19 @@ const devStage = new aws.apigateway.Stage("todoApiDevStage", {
   restApi: gateway.id,
   stageName: "dev",
 });
+
+// const gatewayEasy = new apigateway.RestAPI("todo-api-awsx", {
+//   routes: [
+//       {
+//           path: "/api",
+//           target: {
+//               type: "http_proxy",
+//               uri: "https://www.google.com",
+//             },
+//       }
+      
+//   ]
+// })
 
 const queueSnsSubPolicy = `{
     "Statement": [
