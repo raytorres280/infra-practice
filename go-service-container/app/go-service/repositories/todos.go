@@ -15,5 +15,12 @@ func NewTodosRepository(db *gorm.DB) TodosRepository {
 }
 
 func (repo *TodosRepository) GetTodos() ([]dao.Todo, error) {
-	repo.db.Find(&dao.Todo{}).Limit(10)
+	var todos []dao.Todo
+	repo.db.Find(todos).Limit(10)
+	// if todos.Error != nil {
+	// 	println(todos.Error.Error())
+	// }
+
+	// return todos
+	return todos, nil
 }

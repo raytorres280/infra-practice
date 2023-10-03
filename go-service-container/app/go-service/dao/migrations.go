@@ -6,7 +6,8 @@ import (
 )
 
 func Migrate() {
-	dsn := "connectionString"
+	// dsn := os.Getenv("RDS_CONNECTION_STRING")
+	dsn := "root:root@tcp(127.0.0.1:3306)/api"
 	// mysql.New()
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	// todo := dao.Todo{}

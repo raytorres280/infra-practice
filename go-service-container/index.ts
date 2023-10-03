@@ -25,13 +25,14 @@ const image = new awsx.ecr.Image("image", {
 });
 
 // Deploy an ECS Service on Fargate to host the application container
-const service = new awsx.ecs.FargateService("goServiceFargate", {
+const fargateService = new awsx.ecs.FargateService("goServiceFargate", {
     cluster: cluster.arn,
     assignPublicIp: true,
     taskDefinitionArgs: {
         container: {
             name: "todoApi",
             image: image.imageUri,
+            environment: [{ name: "RDS_CONNECTION_STRING", value: "" }],
             cpu: cpu,
             memory: memory,
             essential: true,
