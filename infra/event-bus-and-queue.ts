@@ -1,9 +1,14 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+import { ApiArgs } from "@pulumi/aws/apigatewayv2";
+import { DeploymentArgs, RestApi, RestApiArgs } from "@pulumi/aws/apigateway";
 import { TopicSubscriptionArgs } from "@pulumi/aws/sns";
-import * as apiGateway from "./api-gateway";
+import * as apigateway from "@pulumi/aws-apigateway";
+import * as crypto from "crypto";
 
-const queueSnsSubPolicy = `{
+
+export const queueSnsSubPolicy = `{
     "Statement": [
       {
         "Effect": "Allow",
@@ -22,15 +27,13 @@ const queueSnsSubPolicy = `{
   }`
 
 
-const todoListUpdateQueue = new aws.sqs.Queue("new_todos_queue", { policy: queueSnsSubPolicy });
+export const todoListUpdateQueue = new aws.sqs.Queue("new_todos_queue", { policy: queueSnsSubPolicy });
 
-const todoListUpdateTopic = new aws.sns.Topic("new_todo_topic");
+export const todoListUpdateTopic = new aws.sns.Topic("new_todo_topic");
 
 const subArgs: TopicSubscriptionArgs = {
     endpoint: todoListUpdateQueue.arn,
     protocol: "sqs",
     topic: todoListUpdateTopic.arn
 } ;
-const todoListUpdateSub = new aws.sns.TopicSubscription("new_todo_sqs_sub", subArgs);
-
-apiGateway
+export const todoListUpdateSub = new aws.sns.TopicSubscription("new_todo_sqs_sub", subArgs);

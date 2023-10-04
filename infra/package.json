@@ -2,7 +2,7 @@
     "name": "infra",
     "main": "index.ts",
     "devDependencies": {
-        "@types/node": "^16"
+        "@types/node": "^16.18.57"
     },
     "dependencies": {
         "@pulumi/aws": "^5.0.0",

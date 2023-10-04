@@ -1,6 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
+import { todoDb } from "./todo-service-database";
+
+// const dbConnectionString = todoDb.address
 
 const config = new pulumi.Config();
 const containerPort = config.getNumber("containerPort") || 80;
@@ -32,7 +35,7 @@ const fargateService = new awsx.ecs.FargateService("goServiceFargate", {
         container: {
             name: "todoApi",
             image: image.imageUri,
-            environment: [{ name: "RDS_CONNECTION_STRING", value: "" }],
+            environment: [{ name: "RDS_CONNECTION_STRING", value: todoDb.endpoint }],
             cpu: cpu,
             memory: memory,
             essential: true,

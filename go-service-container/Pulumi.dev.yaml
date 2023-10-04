@@ -1,5 +1,0 @@
-config:
-  aws:region: us-east-1
-  go-service-container:containerPort: "80"
-  go-service-container:cpu: "512"
-  go-service-container:memory: "128"
