@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
+import * as docker from "@pulumi/docker";
 import { todoDb } from "./todo-service-database";
 
 // const dbConnectionString = todoDb.address
@@ -21,11 +22,18 @@ const repo = new awsx.ecr.Repository("repo", {
     forceDelete: true,
 });
 
+// const image = new docker.Image
+
 // Build and publish our application's container image from ./app to the ECR repository
 const image = new awsx.ecr.Image("image", {
     repositoryUrl: repo.url,
     path: "./app",
+    extraOptions: ['--platform', 'linux/amd64']
 });
+
+// Create a new CloudWatch log group
+const logGroup = new aws.cloudwatch.LogGroup("fargateLogGroup");
+
 
 // Deploy an ECS Service on Fargate to host the application container
 const fargateService = new awsx.ecs.FargateService("goServiceFargate", {
@@ -43,6 +51,14 @@ const fargateService = new awsx.ecs.FargateService("goServiceFargate", {
                 containerPort: containerPort,
                 targetGroup: loadbalancer.defaultTargetGroup,
             }],
+            logConfiguration: { 
+                logDriver: "awslogs",
+                options: {
+                    "awslogs-region": aws.config.region,
+                    "awslogs-group" : logGroup.name, // Use the new CloudWatch log group
+                    "awslogs-stream-prefix" : "Fargate", 
+                },
+            },
         },
     },
 });
