@@ -6,4 +6,6 @@ COPY go-service .
 
 RUN go build -o main main.go
 
+EXPOSE 80
+
 CMD ["./main"]

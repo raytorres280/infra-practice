@@ -1,1 +1,9 @@
-{config: {'aws:region': us-east-1}}
+{
+  config: {
+    'aws:profile': default,
+    'aws:region': us-east-1,
+    'go-service-container:rdsTodoPassword': {
+      secure: AAABAGPDdcAihw8LXBkZyRHCFJLQKujeVQMiKMzg94Cm7tDuGB5p2mRbu9F2RLr6s5iMvFN8vCiAgi0TMiMtwQ==
+    }
+  }
+}

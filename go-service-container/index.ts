@@ -15,8 +15,14 @@ const memory = config.getNumber("memory") || 128;
 const cluster = new aws.ecs.Cluster("cluster", {});
 
 // An ALB to serve the container endpoint to the internet
-const loadbalancer = new awsx.lb.ApplicationLoadBalancer("loadbalancer", {});
-
+const loadbalancer = new awsx.lb.ApplicationLoadBalancer("loadbalancer", {
+    defaultTargetGroup: {
+        healthCheck: {
+            path: '/health'
+        }
+    }
+});
+loadbalancer.defaultTargetGroup.healthCheck
 // An ECR repository to store our application's container image
 const repo = new awsx.ecr.Repository("repo", {
     forceDelete: true,
@@ -43,7 +49,12 @@ const fargateService = new awsx.ecs.FargateService("goServiceFargate", {
         container: {
             name: "todoApi",
             image: image.imageUri,
-            environment: [{ name: "RDS_CONNECTION_STRING", value: todoDb.endpoint }],
+            environment: [
+                {
+                    name: "RDS_CONNECTION_STRING",
+                    value: pulumi.interpolate`${todoDb.username}:${todoDb.password}@tcp(${todoDb.endpoint})/${todoDb.dbName}`
+                }
+            ],
             cpu: cpu,
             memory: memory,
             essential: true,
@@ -51,17 +62,16 @@ const fargateService = new awsx.ecs.FargateService("goServiceFargate", {
                 containerPort: containerPort,
                 targetGroup: loadbalancer.defaultTargetGroup,
             }],
-            logConfiguration: { 
+            logConfiguration: {
                 logDriver: "awslogs",
                 options: {
                     "awslogs-region": aws.config.region,
-                    "awslogs-group" : logGroup.name, // Use the new CloudWatch log group
-                    "awslogs-stream-prefix" : "Fargate", 
+                    "awslogs-group": logGroup.name, // Use the new CloudWatch log group
+                    "awslogs-stream-prefix": "Fargate",
                 },
             },
         },
     },
 });
-
 // The URL at which the container's HTTP endpoint will be available
 export const url = pulumi.interpolate`http://${loadbalancer.loadBalancer.dnsName}`;

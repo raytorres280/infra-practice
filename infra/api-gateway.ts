@@ -2,8 +2,9 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 // import { ApiArgs } from "@pulumi/aws/apigatewayv2";
-import { DeploymentArgs, RestApi, RestApiArgs } from "@pulumi/aws/apigateway";
+// import { DeploymentArgs, RestApi, RestApiArgs } from "@pulumi/aws/apigateway";
 import { TopicSubscriptionArgs } from "@pulumi/aws/sns";
+// import { DeploymentArgs, RestApi, RestApiArgs } from "@pulumi/aws/api";
 // import * as apigateway from "@pulumi/aws/apigatewayv2";
 import * as crypto from "crypto";
 // import { fargateService, url } from "./go-service-ecs"
@@ -29,6 +30,10 @@ export const route = new aws.apigatewayv2.Route('MyRoute', {
   routeKey: 'ANY /',
   target: integration.id.apply(id => `integrations/${id}`)
 });
+
+
+// const apiFancy = new awsx.apigateway
+
 
 // Initialize the deployment
 export const deployment = new aws.apigatewayv2.Deployment('MyDeployment', {
