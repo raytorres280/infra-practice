@@ -3,26 +3,27 @@ import * as aws from "@pulumi/aws";
 import { TopicSubscriptionArgs } from "@pulumi/aws/sns";
 import * as apiGateway from "./api-gateway";
 
-const queueSnsSubPolicy = `{
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "sns.amazonaws.com"
-        },
-        "Action": "sqs:SendMessage",
-        "Resource": "arn:aws:sqs:us-east-2:123456789012:MyQueue",
-        "Condition": {
-          "ArnEquals": {
-            "aws:SourceArn": "arn:aws:sns:us-east-2:123456789012:MyTopic"
-          }
-        }
-      }
-    ]
-  }`
+// const queueSnsSubPolicy = `{
+//     "Statement": [
+//       {
+//         "Effect": "Allow",
+//         "Principal": {
+//           "Service": "sns.amazonaws.com"
+//         },
+//         "Action": "sqs:SendMessage",
+//         "Resource": "arn:aws:sqs:us-east-2:123456789012:MyQueue",
+//         "Condition": {
+//           "ArnEquals": {
+//             "aws:SourceArn": "arn:aws:sns:us-east-2:123456789012:MyTopic"
+//           }
+//         }
+//       }
+//     ]
+//   }`
 
+// let snsPolicy = aws.iam.getPolicyDocument();
 
-const todoListUpdateQueue = new aws.sqs.Queue("new_todos_queue", { policy: queueSnsSubPolicy });
+const todoListUpdateQueue = new aws.sqs.Queue("new_todos_queue");
 
 const todoListUpdateTopic = new aws.sns.Topic("new_todo_topic");
 

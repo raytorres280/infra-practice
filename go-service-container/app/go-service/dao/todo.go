@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type Todo struct {
 	gorm.Model
-	Id        int
-	Title     string
+	// Id        int
+	Title     string `binding:"required"`
 	Category  Category
 	UserEmail string
 	UserName  string
