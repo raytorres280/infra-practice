@@ -3,8 +3,12 @@ package routes
 import (
 	"api/dao"
 	"api/repositories"
+	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/aws/aws-sdk-go-v2/service/sns"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -50,6 +54,25 @@ func CreateTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"todo": result,
 	})
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	svc := sns.New(sess)
+
+	// msgPtr := flag.String() 
+
+
+	topicArn := os.Getenv("TOPIC_ARN")
+	msg, err := svc.Publish(&sns.PublishInput{
+		Message:  "hello from application",
+		TopicArn: topicArn,
+	})
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	fmt.Println(msg)
 }
 
 func UpdateTodo(c *gin.Context) {

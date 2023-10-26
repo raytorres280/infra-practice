@@ -4,6 +4,12 @@ import * as awsx from "@pulumi/awsx";
 import * as docker from "@pulumi/docker";
 import { todoDb } from "./todo-service-database";
 
+
+
+const infraStack = new pulumi.StackReference("raytorres280/infra/dev");
+const topicArn = infraStack.getOutput("topicArn");
+
+
 // const dbConnectionString = todoDb.address
 
 const config = new pulumi.Config();
@@ -53,6 +59,10 @@ const fargateService = new awsx.ecs.FargateService("goServiceFargate", {
                 {
                     name: "RDS_CONNECTION_STRING",
                     value: pulumi.interpolate`${todoDb.username}:${todoDb.password}@tcp(${todoDb.endpoint})/${todoDb.dbName}`
+                },
+                {
+                    name: "TOPIC_ARN",
+                    value: pulumi.interpolate`${topicArn}`
                 }
             ],
             cpu: cpu,
